@@ -1,0 +1,19 @@
+{
+    "folders":
+    [
+        {
+            "path": ".",
+        }
+    ],
+    "settings":
+    {
+        "tab_size": 8
+    },
+    "build_systems":
+    [
+        {
+            "name": "List",
+            "shell_cmd": "ls -l"
+        }
+    ]
+}
