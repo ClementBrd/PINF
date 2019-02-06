@@ -19,11 +19,11 @@ session_start();
 	else 
 	{
 		// si on a une action, on devrait avoir un message classique
-		$data["feedback"] = "entrez action: logout, setUser(login,passe,initiales), getUsers,setNotification(description), getNotifications, delNotification(idNotification), setBoard(label),getBoards,majBoard(idBoard,label), getColonnes(idBoard), majColonne(idBoard,numColonne,label), setPostIt(idBoard,[label],[avancement],[numColonne]), getPostIts(idBoard,[numColonne]),  majPostIt(idPostIt,[label],[avancement],[numColonne]), delPostIt(idPostIt),setMarqueur(idPostIt,type,valeur), getMarqueurs(idPostIt),delMarqueur(idMarqueur),setCommentaire(idPostIt,contenu),getCommentaires(idPostIt),delCommentaire(idPostIt)";
+		$data["feedback"] = "entrez action: logout, setUser(login,passe,initiales), getUsers,setNotification(description), getNotifications, delNotification(idNotification), setTable(label),getTables,majTable(idTable,label), getColonnes(idTable), majColonne(idTable,numColonne,label), setPostIt(idTable,[label],[avancement],[numColonne]), getPostIts(idTable,[numColonne]),  majPostIt(idPostIt,[label],[avancement],[numColonne]), delPostIt(idPostIt),setMarqueur(idPostIt,type,valeur), getMarqueurs(idPostIt),delMarqueur(idMarqueur),setCommentaire(idPostIt,contenu),getCommentaires(idPostIt),delCommentaire(idPostIt)";
 				
 		// si pas connecte et action n'est pas connexion, on refuse
 		if ( (!valider("idUser","SESSION")) && ($data["action"] != "connexion" ) ) {
-			$data["feedback"] = "Entrez connexion(login,passe) (eg 'user','user')";
+			$data["feedback"] = "Entrez connexion(identifiant,passe) (eg 'user','user')";
 		}
 		else {
 			 
@@ -39,13 +39,13 @@ session_start();
 			
 
 					if 	(
-							!($login = valider("login")) 
+							!($identifiant = valider("identifiant")) 
 						|| 	!($passe = valider("passe"))
 						||	!($data["connecte"] = verifUser($login,$passe))
 					)
 					{
 						// On verifie l'utilisateur, et on crée des variables de session si tout est OK
-						$data["feedback"] = "Entrez login,passe (eg 'user','user')";
+						$data["feedback"] = "Entrez identifiant,passe (eg 'user','user')";
 					}
 				break;
 
@@ -58,174 +58,69 @@ session_start();
 
 				// Utilisateurs //////////////////////////////////////////////////
 
-				case 'setUser' :
-				if ($login = valider("login"))
-				if ($passe = valider("passe"))
-				if ($initiales = valider("initiales"))
-				{
-					$data["idUser"] = mkUser($login, $passe, $initiales); 
-					mkNotification(valider("idUser","SESSION"),"Creation de l\'utilisateur $login"); 
-				}
-				break;
-
 
 				case 'getUsers' : 
 					$data["users"] = listerUsers();
 				break;
 
-				// Notifications //////////////////////////////////////////////////
+				// Tables //////////////////////////////////////////////////
 
-				// plutôt un message interne qu'une action possible...
-				case 'setNotification' :
-				if ($idAuteur = valider("idUser","SESSION"))
-				if ($description = valider("description"))
-				{	
-					$data["idNotification"] = mkNotification($idAuteur,$description); 
-				}
-				break;
-
-
-				case 'getNotifications' : 
-					$data["notifications"] = listerNotifications();
-				break;
-
-				case 'delNotification' : 
-					if ($idNotification = valider("idNotification"))
-					delNotification($idNotification); 
-				break;
-
-				// Boards //////////////////////////////////////////////////
-
-				case 'setBoard' :
+				case 'setTable' :
 				if ($label = valider("label"))
 				{
-					$data["idBoard"] = mkBoard($label);
+					$data["idTable"] = mkTable($label);
 					// On définit aussi ses colonnes 
-					setColonnes($data["idBoard"]); 
+					setColonnes($data["idTable"]); 
 
-					mkNotification(valider("idUser","SESSION"),"Creation du Board \'$label\'"); 
+					mkNotification(valider("idUser","SESSION"),"Creation du Table \'$label\'"); 
+					//TODO : à Modifier
 				}
 				break;
 
 
-				case 'getBoards' : 
-					$data["boards"] = listerBoards();
+				case 'getTables' : 
+					$data["boards"] = listerTables();
 				break;
 
-				case 'majBoard' : 
-					if ($idBoard = valider("idBoard"))
+				case 'majTable' : 
+					if ($idTable = valider("idTable"))
 					if ($label = valider("label"))
-					majBoard($idBoard,$label); 
+					majTable($idTable,$label); 
 				break;
 
 				// Colonnes //////////////////////////////////////////////////
 
 
 				case 'getColonnes' : 
-					if ($idBoard = valider("idBoard"))
-					$data["colonnes"] = listerColonnes($idBoard);
+					if ($idTable = valider("idTable"))
+					$data["colonnes"] = listerColonnes($idTable);
 				break;
 
 				case 'majColonne' : 
-					if ($idBoard = valider("idBoard"))
+					if ($idTable = valider("idTable"))
 					if ($numColonne = valider("numColonne"))
 					if ($label = valider("label"))
-					majColonne($idBoard,$numColonne,$label); 
+					majColonne($idTable,$numColonne,$label); 
 				break;
 
-				// post its //////////////////////////////////////////////////
+				// DATA //////////////////////////////////////////////////
 
-
-				case 'setPostIt' :
-				if ($idBoard = valider("idBoard"))
-				{	
-					$label = valider("label"); 
-					$avancement = valider("avancement"); 
-					$numColonne = valider("numColonne"); 
-					$data["idPostIt"] = mkPostIt($idBoard, $label,$avancement, $numColonne);
-
-					mkNotification(valider("idUser","SESSION"),"Creation du PostIt \'$label\'"); 
-					
-				}
 				break;
 
 
-				case 'getPostIts' : 
-					if ($idBoard = valider("idBoard")) {
+				case 'getData' : 
+					if ($idTable = valider("idTable")) {
 						$numColonne = valider("numColonne"); 
-						$data["postIts"] = listerPostIts($idBoard,$numColonne); 
+						$data["postIts"] = listerPostIts($idTable,$numColonne); 
 					}
 				break;
 
-				case 'majPostIt' : 
+				case 'majData' : 
 					if ($idPostIt = valider("idPostIt"))
 					{
-						$label = valider("label"); 
-						$avancement = valider("avancement"); 
-						$numColonne = valider("numColonne");
-						majPostIt($idPostIt, $label,$avancement, $numColonne);  
-
-						mkNotification(valider("idUser","SESSION"),"Mise a jour du PostIt \'$label\'"); 
+						//TODO : à faire avec majData() dans bdd.php
 					}
 				break;
-
-				case 'delPostIt' : 
-					if ($idPostIt = valider("idPostIt"))
-					delPostIt($idPostIt);
-				break;
-
-
-				// marqueurs //////////////////////////////////////////////////
-				case 'setMarqueur' :
-				if ($idPostIt = valider("idPostIt"))
-				if ($type = valider("type"))
-				if ($valeur = valider("valeur"))
-				{	
-					$data["idMarqueur"] = mkMarqueur($idPostIt, $type, $valeur); 
-					mkNotification(valider("idUser","SESSION"),"Creation d\'un marqueur dans le post-it \'$idPostIt\'"); 
-				}
-				break;
-
-
-				case 'getMarqueurs' : 
-					if ($idPostIt = valider("idPostIt")) {
-						$data["marqueurs"] = listerMarqueurs($idPostIt); 
-					}
-				break;
-
-				case 'delMarqueur' : 
-					if ($idMarqueur = valider("idMarqueur"))
-					delMarqueur($idMarqueur); 
-
-					mkNotification(valider("idUser","SESSION"),"Suppression du marqueur \'$idMarqueur\'"); 
-				break;
-
-				// commentaires //////////////////////////////////////////////////
-				case 'setCommentaire' :
-				if ($idPostIt = valider("idPostIt"))
-				if ($contenu = valider("contenu"))
-				if ($idAuteur = valider("idUser","SESSION"))
-				{	
-					$data["idCommentaire"] = mkCommentaire( $contenu,$idAuteur,$idPostIt); 
-					mkNotification(valider("idUser","SESSION"),"Commentaire du post-it \'$idPostIt\' : \'contenu\' ");
-				}
-				break;
-
-
-				case 'getCommentaires' : 
-					if ($idPostIt = valider("idPostIt")) {
-						$data["commentaires"] = listerCommentaires($idPostIt); 
-					}
-				break;
-
-				case 'delCommentaire' : 
-					if ($idCommentaire = valider("idCommentaire"))
-					delCommentaire($idCommentaire) ;
-					mkNotification(valider("idUser","SESSION"),"Suppression du commentaire \'$idCommentaire\' ");
-				break;
-
-
-				// Defaut //////////////////////////////////////////////////
 
 				default : 				
 					$data["action"] = "default";
