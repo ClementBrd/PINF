@@ -13,14 +13,14 @@
 
     <script type="text/javascript">
         $(document).on("click", "input[type=submit]", function(){
+            console.log($("input[type=text]").val());
+            console.log($("input[type=password]").val());
             $.getJSON("data.php", 
             {
                 action : "connexion",
                 identifiant : $("input[type=text]").val(),
                 password : $("input[type=password]").val()
             }, function(oRep){
-                console.log($("input[type=text]").val());
-                console.log($("input[type=password]").val());
                 console.log(oRep.feedback);
             })
         })
