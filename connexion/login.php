@@ -7,9 +7,11 @@
 
     <link rel="stylesheet" href="../bootstrap-4.2.1-dist/css/bootstrap.min.css">
 
-    <script src="../jquery-3.3.1.js"></script>
+    <script src="./libs/jquery-3.3.1.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js"></script>
-    <script src="../bootstrap-4.2.1-dist/js/bootstrap.min.js"></script>
+    <script src="./libs/bootstrap.min.js"></script>
+
+    <script type="text/javascript"></script>
 </head>
 <body>
 
